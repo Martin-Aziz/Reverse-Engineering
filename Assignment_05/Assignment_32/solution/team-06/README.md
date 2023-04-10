@@ -1,0 +1,7 @@
+Der Angriff nutzt 2 Schwachstellen im Programm aus. Die erste Schwachstelle, die auffallen sollte ist, dass in der 'win()' Funktion die Variable response ohne Wertzuweisung initialisiert wird und auch nicht überschrieben wird, wenn die 'if'-Statements umgangen werden. **Es handelt sich um die Schwachstelle „Reste auf dem Stack“.** Schafft man es also, vor der 'win()' '42' in den von response genutzten Speicher zu schreiben wird die Flag ausgegeben (vorrausgesetzt man hat keines der 3 Glücksspiele vorher gewonnen und läuft nicht in die 'ifs').
+
+**Die zweite Schwachstelle ist der 'Integer Overflow' von signed Integern.** 
+In der 'ultimateLuck'-Funktion, die direkt vor der 'win()' aufgerufen wird, wird die Variable 'numberDiff' auf dem Speicherplatz angelegt, der später von 'response' genutzt wird. Die erste eingegebene Zahl wird mit +1 und die zweite mit -1 verrechnet, dann wird die erste von der zweiten Zahl subtrahiert und das Ergebnis in 'numberDiff' geschrieben. 
+Nun muss noch verhindert werden, in das nächste 'if'-Statement zu laufen, in dem 'numberDiff' ansonsten wieder überschrieben wird. Um dies zu verhindern, wird die Rechnung +/-1 genutzt: Gibt man als Zahlen '2147483604' und '– 2147483648' ein erhält man durch Integer Overflow '2147483605' und '2147483647', deren Differenz '42' ist. Gibt man irgendein anderes Zahlenpaar ein, dessen Differenz nach der Rechnung +/-1 '42' beträgt, so läuft man immer in die 'if'-Bedingung, bei der 'numberDiff' überschrieben wird.
+
+Mit '42' in 'numberDiff' gibt die win()-Funktion die Flag aus.
