@@ -1,0 +1,12 @@
+# Crackme 3
+Die erste eingabe wird mit 96 abgeglichen. Die zweite abgabe wird on binär zu dezimal umgewandelt. Daher ist die benötigte eingabe in Ghidra abzulesen.
+0000010100111001
+
+# Terminal 
+
+Geben Sie meine Lieblingszahl ein: 69
+SECRET CODE?
+0000010100111001
+FLAG{REE_CAN_BE_FUN}
+
+

@@ -1,0 +1,39 @@
+Findings:
+Es wird eine CRC32 checksumme verwendet, welche einfach zu manipuleren ist.
+Geändert werden muss in der Key file das erste Byte, welches die Anzahl der Lizenzen angibt. 
+Probleme:
+Die checksumme, welche von GHIDRA erkannt wird sieht auf den ersten Blick verschieden zu der checksumme, welche durch das Bashtool crc32 generiet wird aus, auch wenn die checksummen identisch sind, nur anders dargestellt.
+
+Vorgehen: 
+Wir haben ein Programm verwendet, welches einer beliebigen Datei eine belibige crc checksumme generieren kann, indem es die letzten 4 bytes verändert.
+
+Das genutzte Programm ist hier zu finden: 
+https://www.nayuki.io/page/forcing-a-files-crc-to-any-value
+
+
+
+fsi@fsi-desktop:~/as$ python3 forcer.py license_file.key 5 d55c8f7f  
+Original CRC-32: D55C8F7F
+Computed and wrote patch
+New CRC-32 successfully verified
+
+fsi@fsi-desktop:~/as$ ./license_check 
+You have 0 license(s). Key: ababbabe
+You need at least 1 license to win
+
+#Erstes Byte veränden 
+
+fsi@fsi-desktop:~/as$ hexedit license_file.key  
+
+#Alte CRC checksumme auf veränderte File forcen 
+
+fsi@fsi-desktop:~/as$ python3 forcer.py license_file.key 5 d55c8f7f  
+Original CRC-32: C2279B3C
+Computed and wrote patch
+New CRC-32 successfully verified
+
+fsi@fsi-desktop:~/as$ ./license_check 
+You have 1 license(s). Key: ababbabe
+FLAG{crc32_is_still_not_secure}
+
+

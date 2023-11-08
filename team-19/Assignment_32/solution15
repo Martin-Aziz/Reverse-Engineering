@@ -1,0 +1,23 @@
+# crackme 15
+
+Hier wird nach einer passphrase gefragt nachdem das Programm eine "Magic number ausgibt.
+Bei Betrachtung in Ghidra wird ersichtlich, dass in der "read()" Methode
+aus der Eingabe mit "strol" eine zahl extrahiert wird.
+Danach wird diese extrahierte zahl mit der magic number zwei mal verglichen. Der erste vergleich muss scheitern,
+damit der zweite vergeleich,
+welcher zur flag führ ausgelößt wird.
+Beim Zweiten Vergleich wird die extrahierte float zahl zum int gecastet.
+
+# lösung
+wir nutzen den Integeroverflow beim Cast von long to int und geben eine Zahl ein,
+welche nach dem cast die magic number ergibt. 
+Dafür nutzen  wir die formel:
+
+magic_number + 2147483647*2+2 = benötige eingabe
+
+# konsole
+Your magic number is 41103
+Please enter the passphrase: 
+4295008399
+FLAG{int3gr_0v3rfl0w}
+
