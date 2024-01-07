@@ -1,4 +1,5 @@
 # team-12
+##  Dennis Krämer 2122684 , Oleg Almagambetov 2122201, Arash Aziz 2022144
 
 - [Assignment_001](Assignment_001/loesung/)
 - [Assignment_002](Assignment_002/loesung/)
@@ -13,4 +14,6 @@
 - [Assignment_019](Assignment_019/loesung/loesung.md)
 - [Assignment_022](Assignment_022/loesung/)
 - [Assignment_025](Assignment_025/loesung/)
-
+- [Assignment_028](Assignment_028/loesung/)
+- [Assignment_030](Assignment_030/loesung/)
+- [Assignment_032](Assignment_032/Abgabe/)
