@@ -400,6 +400,204 @@ erhalten wir die Flag.
 ## Flag  
 FLAG{LuckyNumberSlevin}
 ```
+# Team 7 
+```
+
+## Beschreibung des Programms
+
+Weihnachten ist vorbei und ein neuer Lenz ist ins Land gezogen. Gemäß des alten Gedichts [Advent, Advent, ein Lichtlein brennt](https://de.wikipedia.org/wiki/Advent,_Advent,_ein_Lichtlein_brennt) hat der Grinch Weihnachten verpennt.
+Deine Aufgabe? Halte Ihn davon ab schlimmeres zu tun! Und was hat es mit dieser nervigen Erzählstimme auf sich?
+
+Der Grinch hasst übrigens Anti-Käfer-Mittelchen. Und auch Käfer-Mittelchen. Er hasst alles.
+
+## Beschreibung der Exploits
+
+Wir laden die Datei in Ghidra und analysieren diese. Wir betrachten zunächst die main()-Funktion.
+Es werden einige verschiedene Methoden aufgerufen. Wir betrachten diese nacheinander.
+
+setup(): Nichts besonderes, es wird ein Terminierungstimer gesetzt, damit das Programm auf dem Server terminiert nach einer gewissen Zeit.
+tellStory(): Gibt nur einige Strings aus, die eine kleine Geschichte erzählen.
+printMenu(): Gibt ein kleines Menü aus.
+handleUserInput():
+```c
+void handleUserInput(void)
+
+{
+  int iVar1;
+  size_t sVar2;
+  char userInput [112];
+  
+  while( true ) {
+    while( true ) {
+      while( true ) {
+        while( true ) {
+          while( true ) {
+            while( true ) {
+              do {
+                printf("\n[Narrator] What do you intend to do?\n> ");
+                fgets(userInput,100,stdin);
+                sVar2 = strcspn(userInput,"\n");
+                userInput[sVar2] = '\0';
+              } while (userInput[0] == '\0');
+              iVar1 = strcmp(userInput,"ask");
+              if (iVar1 != 0) break;
+              ask();
+            }
+            iVar1 = strcmp(userInput,"give");
+            if (iVar1 != 0) break;
+            give();
+          }
+          iVar1 = strcmp(userInput,"The Grinch");
+          if (iVar1 != 0) break;
+          askGrinch();
+        }
+        iVar1 = strcmp(userInput,"Narrator");
+        if (iVar1 != 0) break;
+        askNarrator();
+      }
+      iVar1 = strcmp(userInput,"leave");
+      if (iVar1 != 0) break;
+      leave();
+    }
+    iVar1 = strcmp(userInput,"guess");
+    if (iVar1 != 0) break;
+    guess();
+  }
+  printf("[Narrator] You can\'t possibly want to \'%s\'! Can you?\n",userInput);
+  printf("Segmentation fault (core dumped)");
+  return;
+}
+```
+
+Ghidra zeigt hier eine obskure Methode an, die einige Vergleiche durchführt und basierend auf diesen verschiedene Funktionen aufruft.
+Innerhalb dieser Funktionen fällt schnell auf, dass es ein Struct gibt, welches den Grinch abbilden soll. Die Werte, welche dort drin abgelegt sind, sind nicht sehr hilfreich und können nicht ohne weitere Schritte genutzt werden, um eine Flag auszugeben. Neben den angezeigten Befehlen fällt nach einer kurzen Analyse jedoch recht schnell auf, dass das Programm weitere Fälle unterscheiden kann.
+Diese werden nun weiter betrachtet.
+
+Die ask()-Funktion scheint einen Userinput einzulesen und anschließend diesen mit etwas zu vergleichen und dann einen Check zu machen auf ein Feld des Grinches. Wenn dieser Wert größer als 3000 ist wird ein geheimer Wert ausgegeben.
+
+### The Grinch - Part 1
+Wir betrachen den Code der askGrinch()-Funktion, welcher über das Menü aufgerufen werden kann:
+
+```c
+void askGrinch(void)
+
+{
+  int comparisonResult;
+  size_t nullCharPos;
+  char userInput [108];
+  int magicNum;
+  
+  printf(
+        "[The Grinch] What do you want from me? I need to steal christmas! If only i could remember my favorite phrase..\n> "
+        );
+  fgets(userInput,0x73,stdin);
+  nullCharPos = strcspn(userInput,"\n");
+  userInput[nullCharPos] = '\0';
+  comparisonResult = strcmp(userInput,"present");
+  if ((comparisonResult == 0) && (magicNum == 0x1337)) {
+    puts("[The Grinch] Oh, you stole something for me? Very good! Wait.. i think i remember!");
+    puts("[The Grinch] I place it inside a present box in this heap of boxes! Wait a second..");
+    sleep(2);
+    puts("[The Grinch] Found it!");
+    deleteFileContents(&DAT_001029d3);
+    theGrinch = theGrinch + 1000;
+    puts("[The Grinch] ...");
+    puts("[The Grinch] Share it with you? Why would i ever do that? It\'s MY favorite phrase.");
+    theGrinch = theGrinch + -2;
+  }
+  else {
+    printf("[The Grinch] \'%s\'? Really? Did you really have to bother me with this? You know what, i think you\'ll take a pause."
+           ,userInput);
+    theGrinch = theGrinch + -1000;
+    sleep(5);
+  }
+  return;
+}
+```
+
+Der erste Exploit besteht aus einem klassischen Buffer-Overflow, welcher durch einen zu kleinen Buffer beim strcpy ausgelöst wird. Das Userinput-Array wird mit einer Length von 100 initialisiert, es werden jedoch 115 Zeichen geschrieben. Im Anschluss wird mit strcmp geprüft, ob der Userinput "present" war und ob eine geheime Zahl 0x1337 entspricht. Dies kann erreicht werden, indem der Bufferflow nach den Buchstaben "present" mit \x00 terminiert wird; jedoch weitere Bytes übergeben werden.
+
+Der Grinch ruft anschließend eine Funktion "deleteFileContents()" auf, welche einen Dateinamen übergeben bekommt. Dieser Methodenname ist absichtlich irreführend gewählt. Die Methode lädt beim ersten Aufruf nicht die Flag, sondern xor'ed jeden Wert einer Menge von Zahlen (ein Byte-Array) mit dem Wert 0x10 und setzt dies als die Flag im Gehirn des Grinches. Beim zweiten Aufruf mit dem gleichen Exploit wird die tatsächliche Flag geladen.
+Dies soll verifizieren, dass die Leute, die diese Aufgabe lösen, tatsächlich den gesamten Code lesen, bevor sie ihn ausführen. In der realen Welt hätte ein Angreifer beliebigen Code in dieser if-Bedingung verstecken können, weshalb hierdurch sensibilisiert werden soll.
+
+Das Laden der Flag weckt schöne Erinnerungen im Grinch, wodurch dessen Herz wächst. Eine der benötigten Bedingungen, damit die Flag ausgegeben wird.
+
+### The Narrator
+Im nächsten Schritt kann der Spieler ein abgekartetes Blackjack gegen den Erzähler spielen. Dieser wird immer gewinnen, außer der Spieler schafft es zu cheaten. Dies ist der Fall, wenn dieser es schafft den Wert ["BonanzaBugs"](https://www.youtube.com/watch?v=XI4fex06rc4) zu übergeben und somit ein gnadenloses Blackjack mit einer Karte zu erzielen. Ähnlich wie im vorherigen Exploit muss auch hier die strcmp Funktion ausgenutzt werden. Der Spieler übergibt diesmal jedoch eine Zahl, mit welcher er spielen möchte und anschließend seinen Cheatcode nach einem null-byte.
+
+Der gewissenlose Grinch freut sich über diesen Spielzug und mag den Spieler nun wieder mehr.
+
+```c
+void askNarrator(void)
+
+{
+  int comparisonResult;
+  char userBet;
+  char magic [12];
+  
+  puts(
+      "[Narrator] Well, i\'m flattered, you see? But it doesn\'t change a thing that i can\'t help y ou."
+      );
+  puts("[Narrator] Well, i can try at least, i guess. What can i do for you?");
+  puts("[Narrator] You want to.. play a game? But then the grinch will be angry! He hates games!");
+  puts("[Narrator] ...");
+  puts("[Narrator] ...");
+  puts("[Narrator] ...");
+  printf("[Narrator] Okay, bet some chocolate coins, we\'ll play black jack.\n> ");
+  __isoc99_scanf(&DAT_0010274d,&userBet);
+  if (userBet < '1') {
+    puts("[Narrator] Bettin\' nothin, huh? Next time maybe.");
+  }
+  else if (userBet < ':') {
+    comparisonResult = strcmp(magic,"BonanzaBugs");
+    if (comparisonResult == 0) {
+      puts(
+          "[The Grinch] Har, har, har! Looks you\'ve got made a fool of by them, doesn\'t it, Narrat or?"
+          );
+      puts("[The Grinch] Hey you, slowly, i\'m beginning to like you!");
+      theGrinch = theGrinch + 500;
+    }
+    else {
+      puts("[Narrator] Welp, you lost! I have 21, you have 4.");
+    }
+  }
+  else {
+    puts("[Narrator] It\'s just a game, chill.");
+  }
+  return;
+}
+```
+
+Wir erkennen zum Glück aus dem Text den Kontext des Codes und können so auf Variablen-Namen schließen und darauf, was der Code tut.
+
+### The Grinch - Part 2
+Da der Grinch den Spieler nun genug mag, kann dieser ein Geheimnis aus dem Grinch rauskitzeln. Da das ganze aber zu einfach wäre, spielen wir ein Spiel mit dem Grinch, welcher sich eine "beliebige" Zahl ausdenken darf. Hierfür wird eine _unseeded_ rand()-Funktion benutzt (diese benutzt immer den Seed 0). Auf jeder Plattform wird somit immer der gleiche Startwert ausgegeben als erste Zufallszahl, welche der Spieler eingeben kann um das Geheimnis des Grinches zu erfahren. Schafft der Spieler nicht, diesen Exploit auszunutzen, so muss er von vorne beginnen. Versprechen müssen eingehalten werden.
+
+Wir zeigen an dieser Stelle keinen Code, da es tatsächlich nur die rand()-Funktion ist, welche von Bedeutung ist.
+
+### The Grinch - Part 3
+Zuletzt kann der Spieler den Grinch ansprechen und ihm sein Geheimnis nennen. Jedoch muss der Spieler auch hier noch einen geheimen Wert übergeben, welcher aus dem Input berechnet wird. Die "tolle" Funktion christmasMagic(int x, int y, int z) berechnet lediglich x + y. Zuvor erfolgt noch eine Prüfung eines geheimen Kennworts, dem Namen des Haustiers des Grinches. Diesen muss der Spieler erneut mit einem Exploit der strcmp-Methode übergeben, bei welchem die christmasMagic()-Funktion den gewünschten Wert berechnet (hier 3, da zuvor im ersten Exploit 2 abgezogen wurden, da der Grinch enttäuscht war; --> 2998 + 3 > 3000). 
+Anschließend gibt der Grinch seine Flag (oder das YouTube-Video) aus und beendet das Spiel.
+
+```c
+int christmasMagic(uint x,uint y,uint z)
+
+{
+  return (~x & z) * 3 +
+         ((~(z ^ x) +
+          ((((~(y | x) * 4 + (((y & ~x) * 4 - (y ^ x)) - (y | x))) - ~(y ^ x)) - ~y) - (~y | x)) + 1
+          + x * 6 + ~z * 5) - (x | z)) + ~x * -2 + ~(z | x) * -4 + (x & ~z) * -4;
+}
+```
+
+Wir erkennen wahrscheinlich nicht sofort, dass es sich hierbei um eine mixed boolean algebra expression handelt und stellen einen Carnaugh-Table auf und vereinfachen die "Schaltung" zu einem einfachen return x + y. christmasMagic berechnet also nur eine triviale Addition.
+
+## Script
+
+Die Exploits in diesem Programm sollten aufzeigen, dass die strcmp-Methode recht unsicher ist und in verschiedenen Fällen genutzt werden kann. Weiter wurde ein recht häufig in MMO auffindbarer "Exploit" gezeigt, welcher die rand()-Funktion betrifft.
+
+Eine automatisierte Lösung ist [hier einsehbar](./pwnit.py). Diese Lösung benötigt Python3 [**pwntools**](https://docs.pwntools.com/en/stable/install.html). 
+
 ```
 #  Team 04
 
