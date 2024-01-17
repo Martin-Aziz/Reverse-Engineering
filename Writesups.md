@@ -218,7 +218,7 @@ erhalten wir die Flag.
 FLAG{LuckyNumberSlevin}
 ```
 ```
-# Writeup Assignment 33 - Team 04
+#  Team 04
 
 ## Beschreibung
 Der Code wird in dieser Aufgabe nicht eingefügt, da dieser ziemlich lange ist.
@@ -241,7 +241,202 @@ Enter the password: ds_umkbM_dx4M_E0I_gyxu_S
 ## Flag
 Flag{Humpty Shuffly BOOO}
 ```
+```
+#  Team 03
 
+## Notiz
+Oh my god, ist das cute gemacht, Platz 1 by far.
+ 
+## Lösung
+ 
+Es gibt einen Cheatmode, den man über einen Bufferoverflow beim strcp ausnutzen kann (username in einen 10er Buffer), deswegen können wir dort einfach 14 Zeichen eingeben.
+ 
+Cheatmode enablen: nojonojonocheat --> buffer overflow beim strcp vom username in den 10er buffer
+-> Cheatmode ist aktiviert
+ 
+Außerdem muss man noch ein Passwort herausfinden, der Input wird in eine Funktion crypter() geschmissen, diese Caesar-verschlüsselt den String mit einem Shift von 10. Somit können wir die Hex-Werte manuell um 10 verschieben und erhalten das Passwort "Sternenstaubdrache", welches wir anschließend wie im Script gezeigt verwenden können, um das Spiel zu starten.
+ 
+```c
+ 
+void gameLoop(undefined8 param_1,long cheatmode)
+ 
+{
+  int selected;
+  uint nonCheatSkillup;
+  int skillUpAmount;
+  int command;
+  uint local_28;
+  uint turn;
+  uint j;
+  uint i;
+  uint availableSkillpoints;
+  uint dmg;
+  uint vitality;
+  uint strength;
+ 
+  strength = 0;
+  vitality = 0;
+  local_28 = 400;
+  dmg = 10;
+  availableSkillpoints = 10;
+  while( true ) {
+    system("clear");
+    puts("-------------------------------------------------------");
+    printf("Available Attribute Points: %d\n\n",(ulong)availableSkillpoints);
+    puts("Current Stats:");
+    printf("Strength: %u\n",(ulong)strength);
+    printf("Vitality: %u\n",(ulong)vitality);
+    puts("-------------------------------------------------------");
+    puts("1. Add points to Strength");
+    puts("2. Add points to Vitality");
+    puts("3. Fight Endboss");
+    puts("4. Quit");
+    puts("-------------------------------------------------------");
+    printf("Enter your choice (1/2/3/4): ");
+    while ((selected = __isoc99_scanf(&DAT_00102eac,&command), selected != 1 ||
+           ((((command != 1 && (command != 2)) && (command != 3)) && (command != 4))))) {
+      puts("Invalid input. Please enter a valid choice.");
+      do {
+        selected = getchar();
+      } while (selected != 10);
+    }
+    if (command == 4) {
+      system("clear");
+                    /* WARNING: Subroutine does not return */
+      exit(0);
+    }
+    if (command == 3) break;
+    if (cheatmode == 0x7461656863) {
+      printf("Enter the number of points to add: ");
+      while ((selected = __isoc99_scanf(&DAT_00102f0e,&skillUpAmount), selected != 1 ||
+             ((int)availableSkillpoints < skillUpAmount))) {
+        puts("Invalid input. Please enter a valid number of points.");
+        do {
+          selected = getchar();
+        } while (selected != 10);
+      }
+      availableSkillpoints = availableSkillpoints - skillUpAmount;
+      if (command == 1) {
+        strength = strength + skillUpAmount;
+      }
+      else if (command == 2) {
+        vitality = vitality + skillUpAmount;
+      }
+    }
+    else {
+      printf("Enter the number of points to add: ");
+      while ((selected = __isoc99_scanf(&DAT_00102f0e,&nonCheatSkillup), selected != 1 ||
+             (availableSkillpoints < nonCheatSkillup))) {
+        puts("Invalid input. Please enter a valid number of points.");
+        do {
+          selected = getchar();
+        } while (selected != 10);
+      }
+      availableSkillpoints = availableSkillpoints - nonCheatSkillup;
+      if (command == 1) {
+        strength = strength + nonCheatSkillup;
+      }
+      else if (command == 2) {
+        vitality = vitality + nonCheatSkillup;
+      }
+    }
+  }
+  if (strength != 0) {
+    for (i = 0; i < strength; i = i + 1) {
+      selected = getRandom();
+      dmg = dmg + selected * 5;
+      if (999 < dmg) break;
+    }
+  }
+  if (vitality != 0) {
+    for (j = 0; j < vitality; j = j + 1) {
+      selected = getRandom();
+      player_hp = player_hp + selected * 5;
+      if (4999 < (int)player_hp) break;
+    }
+  }
+  system("clear");
+  puts("-------------------------------------------------------");
+  puts("Final Stats:");
+  printf("Strength: %u\n",(ulong)strength);
+  printf("Vitality: %u\n",(ulong)vitality);
+  printf("Player HP: %i\n",(ulong)player_hp);
+  printf("Player DMG: %i\n",(ulong)dmg);
+  printf("Available Points: %i\n",(ulong)availableSkillpoints);
+  puts("-------------------------------------------------------");
+  puts("Battle Starts...\n");
+  sleep(5);
+  printPlayerVsEndboss();
+  sleep(3);
+  system("clear");
+  turn = 1;
+  do {
+    if ((turn & 1) == 0) {
+      puts("Player attacks back with legendary Sword Excalibur\n");
+      printf("Attack DMG=%d\n\n",(ulong)dmg);
+      printSword();
+      endboss_hp = endboss_hp - dmg;
+      sleep(3);
+      system("clear");
+      printPlayerVsEndboss();
+      sleep(3);
+      system("clear");
+      if (endboss_hp < 1) {
+        win();
+                    /* WARNING: Subroutine does not return */
+        exit(0);
+      }
+    }
+    else {
+      puts("Dragon attacks with Fireeeee");
+      printf("Attack DMG=%d\n\n",(ulong)local_28);
+      printFireAttack();
+      player_hp = player_hp - local_28;
+      sleep(3);
+      system("clear");
+      printPlayerVsEndboss();
+      sleep(3);
+      system("clear");
+      if ((int)player_hp < 1) {
+        printGameOver();
+                    /* WARNING: Subroutine does not return */
+        exit(0);
+      }
+    }
+    turn = turn + 1;
+  } while( true );
+}
+```
+ 
+Das aktiviert eine Unterscheidung, der Code ist nahezu identisch bis auf das (int)-Cast. Dadurch kann man eine negative Zahl eingeben bei der Statverteilung und somit 5k HP und 1k DMG bekommen (integer underflow durch den Cast). Der Rest spielt sich von alleine, man gewinnt das Spiel und erhält die Flag. Super cute gemacht. Unten ist ein Script, was das ganze automatisiert. Weitere Erklärungen werden für nicht notwendig befunden, da keine weiteren Exploits angewandt werden.
+ 
+## Script
+```python
+from pwn import *
+ 
+pty = process.PTY
+# p = process("./team_03", stdin=pty, stdout=pty)
+p = remote("tank.informatik.hs-mannheim.de", 3103)
+# context.log_level = 'debug'
+ 
+p.sendlineafter(b": ", b"AAAAAAAAAAcheat")
+p.sendlineafter(b": ", b"Sternenstaubdrache")
+ 
+p.sendlineafter(b"): ", b"1")
+p.sendlineafter(b": ", b"-1")
+p.sendlineafter(b"): ", b"2")
+p.sendlineafter(b": ", b"-1")
+p.sendlineafter(b"): ", b"3")
+ 
+# p.recvuntil("FLAG{")
+flag = p.recvall().decode()
+ 
+print(flag)
+
+
+## Flag
+FLAG{dr4g0n_sl4y3r}
+```
 
 
 
