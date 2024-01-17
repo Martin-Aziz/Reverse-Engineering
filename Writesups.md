@@ -818,7 +818,106 @@ print(flag)
 ## Flag
 FLAG{dr4g0n_sl4y3r}
 ```
+# Team 01
 
+ 
+## Lösung 
+ 
+Main ruft eine Validate-Methode auf mit einem String, der nur Hex-Characters beinhaltet.  
+Die Validate Methode sieht wie folgt aus (ja, Funktion, ich verwende die Begriffe für die folgenden Writeups synonym, auch wenn diese es nicht sind):
+```c
+void validate(char *someString)
+ 
+{
+  undefined relevant;
+  undefined local_3a;
+  undefined local_39;
+  undefined local_38;
+  char userInput [25];
+  undefined8 on;
+  undefined2 local_16;
+  undefined local_14;
+  undefined local_13;
+  undefined local_12;
+  undefined local_11;
+  undefined4 binaryNumber;
+  int someNum;
+ 
+  on = 0x4f4e;
+  local_16 = 0;
+  printf("Enter the secret code: ");
+  gets(userInput);
+  someNum = atoi((char *)&on);
+  binaryNumber = fromGray(someNum);
+  relevant = (undefined)((uint)binaryNumber >> 0x18);
+  local_3a = (undefined)((uint)binaryNumber >> 0x10);
+  local_39 = (undefined)((uint)binaryNumber >> 8);
+  local_38 = (undefined)binaryNumber;
+  local_14 = local_38;
+  local_13 = local_39;
+  local_12 = local_3a;
+  local_11 = relevant;
+  xorHexPairs(someString,&relevant);
+  return;
+}
+```
+ 
+Das Programm liest eine Nutzereingabe ein, wandelt diese in eine Zahl um, diese wird dann als Gray-Code interpretiert, die hierbei resultierende Zahl wird anschließend geshiftet und in eine Funktion xorHexPairs übergeben.
+ 
+```c
+void xorHexPairs(char *someString,long someXorShift)
+ 
+{
+  size_t stringLength;
+  uint hexOutput;
+  char hexInput;
+  char right;
+  undefined local_19;
+  uint result;
+  uint shifted;
+  int len;
+  int i;
+ 
+  stringLength = strlen(someString);
+  len = (int)stringLength;
+  if ((stringLength & 1) == 0) {
+    for (i = 0; i < len; i = i + 2) {
+      hexInput = someString[i];
+      right = someString[(long)i + 1];
+      local_19 = 0;
+      __isoc99_sscanf(&hexInput,&DAT_00100bc8,&hexOutput);
+      shifted = (uint)*(char *)(someXorShift + (i / 2) % 4);
+      result = hexOutput ^ shifted;
+      putchar(result);
+    }
+  }
+  return;
+}
+```
+ 
+Diese nimmt den String aus der main-Funktion und den geshifteten Userinput als Shifting-Parameter für eine Reihe von Operationen auf dem String.
+Ziel ist es eine Eingabe zu finden, welche den String dekodiert. Um den gesuchten Schlüssel zu finden wenden wir eine Known Plaintext Attacke an und versuchen unser Glück [sic!], in dem wir die ersten bytes des Strings mit "FLAG{" xor'en. Dies genügt, da der Schlüssel maximal 4 Zeichen lang ist.  
+Wir erhalten "lotrl", und sehen, dass der Key sich wiederholt (ist ebenfalls trivial aus dem Code ersichtlich).
+ 
+Theoretisch ist es an dieser Stelle möglich einfach den String mit `2a233535171b1c17153015000930001307061a15331b1c1733071b100e060001331b1b2d051c111c0b0e061611 ^ lotrlotrlotrlotrlotrlotrlotrlotrlotrlotrlotrl = FLAG{they_are_taking_the_hobbits_to_isengard}` zu berechnen, jedoch ist das etwas langweilig. (und zudem wahrscheinlich nicht erlaubt, da das direkte extrahieren aus dem Programm nicht erlaubt war)
+ 
+## Konstruktion des Eingabe Parameters
+Es muss ein Bufferoverflow verwendet werden um die Variable on zu überschreiben (Name gewählt, da 0x4f4e ON in ASCII ist).  
+Hierfür müssen 25 beliebige Zeichen und dann einige Ziffern eingegeben werden (atoi). Beginnen wir von hinten, es wird der String aus der Validate xor'ed mit dem i.ten Zeichen des Keys, also müssen wir in on "lotr" schreiben. Dafür wandeln wir "lotr" in Hex um (6C 6F 74 72), das dann in Graycode (1011010010110001100111001001011) und parsen das ganze wieder in eine Dezimalzahl (1515769419).
+ 
+Somit erhalten wir:
+```
+./team_01
+Enter the secret code: AAAAAAAAAAAAAAAAAAAAAAAAA1515769419
+FLAG{they_are_taking_the_hobbits_to_isengard}
+```
+ 
+Fertig. XOR for the win
+
+
+## Flag
+`FLAG{they_are_taking_the_hobbits_to_isengard}`
+```
 
 
 
