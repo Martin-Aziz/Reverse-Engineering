@@ -154,6 +154,103 @@ Anschließend erhalten wir die Flagge.
 Bestätigung des Passworts nicht mit ENTER, SONDERN MIT CTRL + D!!
 FLAG{FLAG{FLAG{FLAG{FLAG}}}}
 ```
+# Team 12 
+# *Einer Musterlösung für das Crackme
+#### Malloc never fails
+```
+Wir haben uns entschieden, die Schwachstelle "Malloc never fails" zu behandeln. Wenn ein Fehler auftritt, gibt malloc normalerweise einen Nullpointer zurück, der üblicherweise erkannt und entsprechend behandelt werden sollte. In unserem Szenario geben wir einen Hinweis auf die richtige Eingabe, wenn eine zu große Zahl eingegeben wird.
+```
+#### vorgehenweise :
+```
+Der Bildschirm fordert den Agenten auf, einen speziellen Passcode einzugeben, um den Zugriff zu aktivieren. 
+```
+```console
+┌──(mindh㉿TT)-[/mnt/c/Users/TT/Documents/GitHub/team-12/Assignment_032/Abgabe]
+└─$ ./crackme
+Welcome, Agent. Enter the passcode to access the secure file:
+```
+```
+Wenn ein ungültiges Passwort eingegeben wird, wird ein Standardtext ausgegeben
+```
+``` console
+┌──(mindh㉿TT)-[/mnt/c/Users/TT/Documents/GitHub/team-12/Assignment_032/Abgabe]
+└─$ ./crackme
+Welcome, Agent. Enter the passcode to access the secure file: 665664t4
+Accessing personal identification required: Verifying... Access granted. Welcome, Agent. Proceed with caution.
+```
+```
+Wenn beide Eingaben falsch sind, wird ein Alert ausgegeben.
+```
+```console
+┌──(mindh㉿TT)-[/mnt/c/Users/TT/Documents/GitHub/team-12/Assignment_032/Abgabe]
+└─$ ./crackme
+Welcome, Agent. Enter the passcode to access the secure file: 43343
+Accessing personal identification required: 4334
+Spy Alert !!!!!!!!!!!!!!!!!!!
+```
+```
+Sobald die Speicheranforderung zu groß wird, gibt Malloc einen Nullpointer zurück. Dies könnte dazu führen, dass ein Null-Byte willkürlich im Speicher geschrieben wird.
+Der Agent sollte eine große Zahl eingeben, sodass malloc einen Nullpointer zurückgibt.
+```
+```
+Hier ist eine falsche Flagge zu sehen, begleitet von dem Text 'Malloc never fails' und einigen Hexadezimalzahlen. Der Agent muss diese Zahlen analysieren und versuchen herauszufinden, was sie bedeuten. 378 in Dezimal ist 888,16D61 = 93537,2C61761=46536545 ,025DBF5B=39698267 .
+```
+```
+┌──(mindh㉿TT)-[/mnt/c/Users/TT/Documents/GitHub/team-12/Assignment_032/Abgabe]
+└─$ ./crackme
+Welcome, Agent. Enter the passcode to access the secure file: 99999999999999999999999999999999999
+Access denied. Security breach detected. Initiating lockdown protocol.
+       /\     /\
+      /  \___/  \
+     /    | |    \
+    /     | |     \
+   /______________\
+  / |          |   \
+ /  |   FALSE  |    \
+|   |   FALG{  |    |
+|   |   Malloc |    |
+|   |   never  |    |
+|   |   fail,  |    |
+|   |   16D61, |    |
+|   |     378, |    |
+|   |   2C6176 |    |
+|   |   1,025D |    |
+|   |   BF5B,   |    |
+|___|__________|____|
+```
+```
+Nachdem der Agent herausgefunden hat, dass '888' das Passwort ist und die Zahl '378' in Dezimal umgewandelt hat, muss er noch herausfinden, was der Begriff 'binary access code' bedeuten könnte.
+```
+```console
+┌──(mindh㉿TT)-[/mnt/c/Users/TT/Documents/GitHub/team-12/Assignment_032/Abgabe]
+└─$ ./crackme
+Welcome, Agent. Enter the passcode to access the secure file: 888
+Secure code verification required. Enter binary access code:
+
+```
+```
+Nachdem er die Zahlen als Eingabe ausprobiert hat und herausgefunden hat, dass er  '2C61761' als Binärzahl eingeben soll, sieht er die richtige Flagge.
+"FLAG{REE_LECTURES_WERE_FUN}"
+```
+```console
+┌──(mindh㉿TT)-[/mnt/c/Users/TT/Documents/GitHub/team-12/Assignment_032/Abgabe]
+└─$ ./crackme
+Welcome, Agent. Enter the passcode to access the secure file: 888
+Secure code verification required. Enter binary access code: 10110001100001011101100001
+Access granted. Decrypting secure file...
+  .-----------------.
+ /                 /\
+/                 /  \
+|      _________|    |
+|     |         |    |
+|     |         |    |
+FLAG{REE_LECTURES_WERE_FUN}
+|     |         |    |
+|     |         |    |
+|     |_________|    |
+|___________________|
+File decrypted successfully. Extracted information: CONFIDENTIAL.
+```
 
 # Team-11
 ```
