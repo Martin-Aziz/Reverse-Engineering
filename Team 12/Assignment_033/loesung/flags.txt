@@ -1,0 +1,18 @@
+# Fun with flags...
+# Flag bitte im Format FLAG{text} angeben.
+
+Team 01:FLAG{they_are_taking_the_hobbits_to_isengard}
+Team 02:
+Team 03:FLAG{dr4g0n_sl4y3r}
+Team 04:FLAG{Humpty Shuffly BOOO}
+Team 05:FLAG{scooby_dooby_doo_where_are_you?}
+Team 06:FLAG{LuckyNumberSlevin}
+Team 07:FLAG{Road Runners can't read and don't drink. Meep meep! Honig, Fenster, Balkon, Brot, Frühling, Gardinen}
+Team 08:FLAG{Format Is Important}
+Team 09:FLAG{the_real_flag}
+Team 10:FLAG{Y0u_4r3_4_W1z4rd_H4rry}
+Team 11:FLAG{chipi chipi chapa chapa dubi dubi daba daba}
+Team 12:FLAG{REE_LECTURES_WERE_FUN}
+Team 13:FLAG{FLAG{FLAG{FLAG{FLAG}}}}
+Team 14:FLAG{climbing_the_mountain}
+
