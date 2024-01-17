@@ -1,9 +1,7 @@
 
-### Assignment 33 - Team 14
-### Flag
-```
-FLAG{climbing_the_mountain}
-```
+# Team 14
+
+
 ```text
 Beschreibung
 Multistage Exploits..
@@ -124,8 +122,14 @@ while True:
 
     if "FLAG{" in flag:
         break
+
+
+
+FLAG{climbing_the_mountain}
+
 ```
-### Aufgabe 033 - Team 13
+
+# Team 13
 ```
 Beschreibung
 Schritt 1:
@@ -150,8 +154,187 @@ Anschließend erhalten wir die Flagge.
 Bestätigung des Passworts nicht mit ENTER, SONDERN MIT CTRL + D!!
 FLAG{FLAG{FLAG{FLAG{FLAG}}}}
 ```
+
+# Team-11
 ```
-# Assignment 33 - Team 09
+## C
+
+***main Funktion***
+
+```c
+int main(void) {
+  undefined *puVar1;
+  int iVar2;
+  time_t tVar3;
+  size_t sVar4;
+  char random_number [10];
+  char string_buffer_overflow [10];
+  undefined8 local_4e;
+  undefined2 local_46;
+  undefined local_44;
+  char strcmp_condition_1 [10];
+  char local_39;
+  char *local_28;
+  int local_20;
+  ulong strcmp_condition_2;
+  
+  setup();
+  tVar3 = time((time_t *)0x0);
+  srand((uint)tVar3);
+  strcmp_condition_2._0_4_ = genRandomSuperKey(0x14);
+  
+  // first input in checkIfRobot() serves as a captcha, to prevent brute-force attacks with scripts
+  local_20 = checkIfRobot();
+  if (local_20 == 0) {
+     putchar(10);
+     local_4e = 0x20656d6f636c6557;
+     local_46 = 0x7325;
+     local_44 = 0;
+     printf("Type your name [max 9 chars]: ");
+     
+     // second input to overflow strcmp_condition_1 with value of string_to_win "chipichipi"
+     fgets(string_buffer_overflow,255,stdin);
+     fgets(string_buffer_overflow,255,stdin);
+     printf((char *)&local_4e,string_buffer_overflow,(ulong)(uint)strcmp_condition_2);
+     local_39 = '\0';
+
+     // string_to_win is global variable with value "chipichipi"
+     iVar2 = strcmp(strcmp_condition_1,string_to_win);
+     if (iVar2 == 0) {
+       puts("\nCongrats you entered a secret area");
+       printf("Guess what number I am thinking of [0-20]: ");
+
+       // third input probably to overflow strcmp_condition_2
+       // strcmp_condition_2 then gets inserted into random_number
+       // random_number is then compared with string_buffer_overflow
+       __isoc99_scanf("%s",string_buffer_overflow);
+       sprintf(random_number,"%d",(ulong)(uint)strcmp_condition_2);
+       iVar2 = strcmp(random_number,string_buffer_overflow);
+       if (iVar2 == 0) {
+          puts("\nHi Boss");
+          win();
+          putchar(10);
+       }
+       else {
+          puts("\nWhat a smart guess");
+          printf("Here is your flag: ");
+          puVar1 = KEY;
+          sVar4 = strlen(FLAG);
+          local_28 = (char *)xor_decrypt(FLAG,sVar4 & 0xffffffff,puVar1);
+          printFlag(local_28);
+          putchar(10);
+       }
+     }
+     else {
+       puts("\nThis APP is work in progress try again later...");
+     }
+  }
+  else {
+     puts("BOT");
+  }
+  return 0;
+}
+```
+
+***checkIfRobot Funktion***
+
+```c
+void checkIfRobot(void) {
+  char result_char [10];
+  char user_input [5];
+  uint second_number;
+  uint first_number;
+  int local_14;
+  char operator;
+  uint result_int;
+  
+  local_14 = genRandomSuperKey(3);
+  first_number = genRandomSuperKey(100);
+  second_number = genRandomSuperKey(100);
+  operator = '+';
+  result_int = second_number;
+  if (local_14 == 1) {
+    result_int = -second_number;
+    operator = '-';
+  }
+  result_int = result_int + first_number;
+  if (local_14 == 2) {
+    result_int = first_number * second_number;
+    operator = '*';
+  }
+  printf("Solve this test: %d %c %d = ",(ulong)first_number,(ulong)(uint)(int)operator,
+         (ulong)second_number);
+  __isoc99_scanf(&%s,user_input);
+  sprintf(result_char,"%d",(ulong)result_int);
+  strcmp(result_char,user_input);
+  return;
+}
+```
+
+## 1
+
+Bei der ersten Eingabe in der checkIfRobot Funktion muss eine Mathe Aufgabe gelöst werden. 
+Dabei werden zufällig zwei Zahlen zwischen 1 und 100 verwendet sowie ein zufälliger Operator +, - oder *.
+Der Sinn hinter dieser Eingabe ist vermutlich ein Captcha, um Bruteforce/Fuzzing Angriffe mittels eines Skripts zu verhindern.
+Falls das Ergebnis richtig eingegeben wurde gelangt man zur nächsten Eingabe.
+
+```bash
+$ ./crackme_11
+Solve this test: 97 - 6 = 91
+
+Type your name [max 9 chars]:
+```
+
+## 2
+
+Die zweite Eingabe hat eine Buffer Overflow Schwachstelle, da 255 Zeichen mittels `fgets(string_buffer_overflow,255,stdin);` eingelesen werden, das Ziel jedoch nur 10 Zeichen Platz hat. 
+
+Die Variable `char string_buffer_overflow [10];` wird zuerst mit den 10 Werten 12345678901234567890 gefüllt danach wird der 11 Zeichen lange String "Welcome %s\0" bestehend aus den Variablen `undefined8 local_4e;`, `undefined2 local_46;` und `undefined local_44;` mit den Werten 12345678901 gefüllt, zuletzt wird `char strcmp_condition_1 [10];` mit dem Wert "chipichipi" der globalen Variable `string_to_win`, welche im strcmp verwendet wird befüllt.
+
+Zusammen ergibt dies für die zweite Eingabe "123456789012345678901chipichipi" um zur letzten Eingabe in der "secret area" zu gelangen.
+
+```bash
+$ ./crackme_11
+Solve this test: 97 - 6 = 91
+
+Type your name [max 9 chars]: 123456789012345678901chipichipi
+12345678901chipichipi
+
+Congrats you entered a secret area
+Guess what number I am thinking of [0-20]:
+```
+
+## 3
+
+Zu unserem Vorteil enthält der von uns vorhin betrachtete Codeabschnitt die folgende Zeile Code:
+
+
+```
+printf((char *)&printed_string,user_input,(ulong)rand_value);
+```
+
+Da außerdem printed_string in dem von uns überschreibbar Abschnitt liegt, können wir den in die Konsole dargestellten String so anpassen, dass er uns die zufällige Geheimzahl verrät:
+
+```
+$ ./crackme_11                                                     
+Solve this test: 5 + 5 = 10
+
+Type your name [max 9 chars]: 123456789000000000000chipichipi
+Type your name [max 9 chars]: 1234567890%s-$d-00000chipichipi
+1234567890%s-$d-00000chipichipi
+16-00000chipichipi
+
+Congrats you entered a secret area
+Guess what number I am thinking of [0-20]: 16
+
+Hi Boss
+FLAG{chipi chipi chapa chapa dubi dubi daba daba}
+```
+#  Team 09
+
+```
+
+
 
  
 ## Beschreibung  
