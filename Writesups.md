@@ -597,9 +597,9 @@ Wir erkennen wahrscheinlich nicht sofort, dass es sich hierbei um eine mixed boo
 Die Exploits in diesem Programm sollten aufzeigen, dass die strcmp-Methode recht unsicher ist und in verschiedenen Fällen genutzt werden kann. Weiter wurde ein recht häufig in MMO auffindbarer "Exploit" gezeigt, welcher die rand()-Funktion betrifft.
 
 Eine automatisierte Lösung ist [hier einsehbar](./pwnit.py). Diese Lösung benötigt Python3 [**pwntools**](https://docs.pwntools.com/en/stable/install.html). 
-
-```
 #  Team 04
+```
+
 
 ## Beschreibung
 Der Code wird in dieser Aufgabe nicht eingefügt, da dieser ziemlich lange ist.
@@ -622,18 +622,15 @@ Enter the password: ds_umkbM_dx4M_E0I_gyxu_S
 ## Flag
 Flag{Humpty Shuffly BOOO}
 ```
-```
 #  Team 03
+```
 
-## Notiz
-Oh my god, ist das cute gemacht, Platz 1 by far.
  
 ## Lösung
  
 Es gibt einen Cheatmode, den man über einen Bufferoverflow beim strcp ausnutzen kann (username in einen 10er Buffer), deswegen können wir dort einfach 14 Zeichen eingeben.
  
-Cheatmode enablen: nojonojonocheat --> buffer overflow beim strcp vom username in den 10er buffer
--> Cheatmode ist aktiviert
+"AAAAAAAAAAcheat" --> buffer overflow beim strcp vom username in den 10er buffer
  
 Außerdem muss man noch ein Passwort herausfinden, der Input wird in eine Funktion crypter() geschmissen, diese Caesar-verschlüsselt den String mit einem Shift von 10. Somit können wir die Hex-Werte manuell um 10 verschieben und erhalten das Passwort "Sternenstaubdrache", welches wir anschließend wie im Script gezeigt verwenden können, um das Spiel zu starten.
  
