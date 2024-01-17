@@ -150,7 +150,73 @@ Anschließend erhalten wir die Flagge.
 Bestätigung des Passworts nicht mit ENTER, SONDERN MIT CTRL + D!!
 FLAG{FLAG{FLAG{FLAG{FLAG}}}}
 ```
+```
+# Assignment 33 - Team 09
 
+ 
+## Beschreibung  
+Ich habe ehrlich gesagt keine Ahnung was dieses brainfuck interpreter ding in der encrypt() machen soll.
+ 
+```c
+undefined8 main(void)
+ 
+{
+  int cmpresult;
+  size_t keylength;
+  long in_FS_OFFSET;
+  undefined key [4];
+  int local_60;
+  int local_5c;
+  void *someBuff;
+  undefined2 magic;
+  undefined local_49;
+  undefined userInput [40];
+  long canary;
+ 
+  canary = *(long *)(in_FS_OFFSET + 0x28);
+  local_60 = 0x13;
+  keylength = strlen(::key);
+  local_5c = (int)keylength;
+  someBuff = malloc(0x13);
+  magic = 0x7266;
+  local_49 = 0x70;
+  memset(userInput,0,0x20);
+  printf("Enter message: ");
+  __isoc99_scanf(&readString,userInput);
+  printf("Enter key: ");
+  __isoc99_scanf(&readDouble,key);
+  keylength = strlen((char *)&magic);
+  encrypt((char *)&magic,(int)keylength);
+  cmpresult = strcmp((char *)&magic,"secure");
+  if (cmpresult == 0) {
+    xor_crypt(someBuff,crypt,(long)local_60,::key,(long)local_5c);
+    print_array(someBuff,(long)local_60);
+  }
+  else {
+    puts("Done.");
+  }
+  if (canary != *(long *)(in_FS_OFFSET + 0x28)) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail();
+  }
+  return 0;
+}
+```
+ 
+magic und local haben den String "frp" (fr + p), die Nutzereingabe wird an diesen angehängt in der encrypt-Funktion. Dort wird weiter der String mit einer caesar-Ciphre verschlüsselt (Shift 13). Unser Ziel ist es, dass die Nutzereingabe mit frp das Wort "secure" ergibt. Dies ist möglich, da "frp" um 13 verschoben "sec" ist, wir müssen also nur noch "ure" einfügen. Dafür verschieben wir das ganze auch um 13 (DoppelROT13) und erhalten "her".
+ 
+Nach der Eingabe:  
+```bash
+./team_09
+Enter message: her
+Enter key: 13
+FLAG{the_real_flag}
+```
+ 
+erhalten wir die Flag.
+## Flag  
+FLAG{LuckyNumberSlevin}
+```
 
 
 
