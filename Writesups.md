@@ -217,6 +217,30 @@ erhalten wir die Flag.
 ## Flag  
 FLAG{LuckyNumberSlevin}
 ```
+```
+# Writeup Assignment 33 - Team 04
+
+## Beschreibung
+Der Code wird in dieser Aufgabe nicht eingefügt, da dieser ziemlich lange ist.
+Es gibt eine Funktion shuffle in der Main-Methode, welche das erste Zeichen eines Strings durch das letzte ersetzt (und dann tauscht), das zweite durchs vorletzte etc.
+
+Führen wir dies einmal von Hand auf die angegebenen Hex-Werte aus erhalten wir _nicht_ die Flag, sondern:  
+`I_know_Y0U_C4nt_Crack_it` wird zu `ti_kcarC_tn4C_U0Y_wonk_I`
+
+Die Funktion encrypt() caesar-verschlüsselt den vorgegebenen String mit einem Shift um 10. 
+Die Funktion encryptDecrypt() verschlüsselt jedes Zeichen eines Strings mit 0x4b.  
+Die Funktion decrypt() verwendet den gleichen Code wie team_03, übergibt jedoch ein paar weitere Parameter. Auch hier wird eine Caesar-Ciphre implementiert.
+
+Wir können also das umgedrehte Passwort caesar-verschlüsseln um 10, erhalten `ds_umkbM_dx4M_E0I_gyxu_S`, also die Eingabe für das Passwort. Für die Ausführung und den Ausgabewert siehe angehängtes Script.
+
+## Script
+```python
+nojo@Nojo:~/ree/team01$ ./team_04
+Enter the password: ds_umkbM_dx4M_E0I_gyxu_S
+4Ole�Flag{Humpty Shuffly BOOO}
+## Flag
+Flag{Humpty Shuffly BOOO}
+```
 
 
 
