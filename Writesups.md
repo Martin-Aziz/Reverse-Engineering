@@ -750,10 +750,6 @@ while True:
 ```
 # Assignment 33 - Team 05
 
-
-## Notiz
-Flag.. steht plain drin
-
 ## Beschreibung
 Dreistufiges CTF, bei welchem mehrere Eingaben getätigt werden müssen, um die Flag zu erhalten. (Oder man hat Augen und schaut einfach in den Code..)
 
