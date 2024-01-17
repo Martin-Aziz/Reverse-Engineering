@@ -592,11 +592,6 @@ int christmasMagic(uint x,uint y,uint z)
 
 Wir erkennen wahrscheinlich nicht sofort, dass es sich hierbei um eine mixed boolean algebra expression handelt und stellen einen Carnaugh-Table auf und vereinfachen die "Schaltung" zu einem einfachen return x + y. christmasMagic berechnet also nur eine triviale Addition.
 
-## Script
-
-Die Exploits in diesem Programm sollten aufzeigen, dass die strcmp-Methode recht unsicher ist und in verschiedenen Fällen genutzt werden kann. Weiter wurde ein recht häufig in MMO auffindbarer "Exploit" gezeigt, welcher die rand()-Funktion betrifft.
-
-Eine automatisierte Lösung ist [hier einsehbar](./pwnit.py). Diese Lösung benötigt Python3 [**pwntools**](https://docs.pwntools.com/en/stable/install.html). 
 #  Team 04
 ```
 
