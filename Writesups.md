@@ -125,3 +125,34 @@ while True:
     if "FLAG{" in flag:
         break
 ```
+### Aufgabe 033 - Team 13
+```
+Beschreibung
+Schritt 1:
+Einfach das, was an der Wand steht, mit "brainbrainbrain" xor'en, Ergebnis: xorgenius!
+
+Schritt 2:
+Benutzername und Passwort stehen in der jeweiligen Methode als Hexadezimalcode, Benutzername = Dev, Passwort = 1337 ABER
+
+Schritt 3:
+Es wird eine andere Variable benutzt --> ein Bufferoverflow wird bei einem der Eingaben benötigt.
+Da der Benutzername komplett egal ist, muss das Passwort gefälscht werden.
+
+Dabei fällt auf, dass die ersten drei Zeichen als Benutzername genommen werden müssen (muss Dev sein), dann muss der Stack mit 8 Zeichen überbrückt werden und der Wert 1337 im Speicher abgelegt werden.
+
+Benutzername: egal
+Passwort: DevAAAAAAAA1337
+
+(oder irgendein beliebiges Zeichen statt A)
+
+Anschließend erhalten wir die Flagge.
+
+Bestätigung des Passworts nicht mit ENTER, SONDERN MIT CTRL + D!!
+FLAG{FLAG{FLAG{FLAG{FLAG}}}}
+```
+
+
+
+
+
+
