@@ -1,5 +1,5 @@
 # team-12
-##  Dennis Krämer 2122684 , Oleg Almagambetov 2122201, Arash Aziz 2022144
+##  Dennis Krämer 2122684 , Oleg Almagambetov 2122201, Martin Aziz 2022144
 
 - [Assignment_001](Assignment_001/loesung/)
 - [Assignment_002](Assignment_002/loesung/)
